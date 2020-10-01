@@ -13,6 +13,15 @@ module "eks_openid_connect" {
   region                  = var.region
 }
 
+module "alb" {
+  source = "git@github.com:kabisa/terraform-aws-eks-alb-ingress.git?ref=1.0"
+  account_id = var.account_id
+  eks_cluster_name = var.eks_cluster_name
+  oidc_host_path = module.eks_openid_connect.oidc_host_path
+  region = var.region
+  vpc_id = module.vpc.vpc_id
+}
+
 resource "kubernetes_service" "my-service" {
   metadata {
     name = "my-service"
