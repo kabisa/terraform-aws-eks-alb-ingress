@@ -165,25 +165,25 @@ resource "aws_iam_policy" "alb-ingress-controller-iam-policy" {
 }
 
 resource "aws_iam_role" "alb-ingress-controller-iam-role" {
-  name = "ALBIngressControllerIAMRole"
+  name               = "ALBIngressControllerIAMRole"
   assume_role_policy = jsonencode(
-    {
-      Statement = [
-        {
-          Action = "sts:AssumeRoleWithWebIdentity"
-          Condition = {
-            StringEquals = {
-              "${var.oidc_host_path}:aud" = "sts.amazonaws.com"
-            }
+  {
+    Statement = [
+      {
+        Action    = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "${var.oidc_host_path}:aud" = "sts.amazonaws.com"
           }
-          Effect = "Allow",
-          Principal = {
-            Federated = "arn:aws:iam::${var.account_id}:oidc-provider/${var.oidc_host_path}"
-          }
-        },
-      ]
-      Version = "2012-10-17"
-    }
+        }
+        Effect    = "Allow",
+        Principal = {
+          Federated = "arn:aws:iam::${var.account_id}:oidc-provider/${var.oidc_host_path}"
+        }
+      },
+    ]
+    Version   = "2012-10-17"
+  }
   )
 }
 
@@ -192,22 +192,12 @@ resource "aws_iam_role_policy_attachment" "alb-ingress-controller-iam-role-polic
   policy_arn = aws_iam_policy.alb-ingress-controller-iam-policy.arn
 }
 
-resource "kubectl_manifest" "alb-cluster-role" {
-  lifecycle {
-    ignore_changes = [uid]
-  }
-  yaml_body = templatefile("${path.module}/yamls/alb-rbac-role.yaml", {
-    account_id   = var.account_id,
-    alb_iam_role = aws_iam_role.alb-ingress-controller-iam-role.name,
-  })
-}
-
 # crafted after: https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/v1.1.8/docs/examples/alb-ingress-controller.yaml
 # from docs: https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html
 # usually I prefer them as yamls because you can check the diff for new changes
 # this one should be small enough and stable enough
 resource "kubernetes_deployment" "alb-ingress-controller-deployment" {
-  depends_on = [kubectl_manifest.alb-cluster-role]
+  depends_on = [kubernetes_cluster_role_binding.alb_ingress_controller, kubernetes_cluster_role.alb_ingress_controller, kubernetes_service_account.alb_ingress_controller]
   metadata {
     name      = "alb-ingress-controller"
     namespace = "kube-system"
@@ -226,8 +216,8 @@ resource "kubernetes_deployment" "alb-ingress-controller-deployment" {
       }
       spec {
         container {
-          name = "alb-ingress-controller"
-          args = [
+          name  = "alb-ingress-controller"
+          args  = [
             "--ingress-class=alb",
             "--cluster-name=${var.eks_cluster_name}",
             "--aws-vpc-id=${var.vpc_id}",
