@@ -36,7 +36,7 @@ resource "aws_iam_role_policy_attachment" "alb-ingress-controller-iam-role-polic
 # helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=<cluster-name>
 
 data "template_file" "loadbalancer-controller" {
-  filename = "${path.module}/yamls/loadbalancer-values.yaml"
+  template = "${path.module}/yamls/loadbalancer-values.yaml"
   vars = {
     cluster_name = var.eks_cluster_name
     vpc_id = var.vpc_id
