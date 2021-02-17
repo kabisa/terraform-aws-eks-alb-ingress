@@ -38,7 +38,7 @@ resource "aws_iam_role_policy_attachment" "alb-ingress-controller-iam-role-polic
 data "template_file" "loadbalancer-controller" {
   filename = "${path.module}/yamls/loadbalancer-values.yaml"
   vars = {
-    cluster_name = var.cluster_name
+    cluster_name = var.eks_cluster_name
     vpc_id = var.vpc_id
     region = var.region
   }
