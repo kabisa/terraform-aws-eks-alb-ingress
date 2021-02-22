@@ -31,6 +31,10 @@ resource "aws_iam_role_policy_attachment" "alb-ingress-controller-iam-role-polic
   policy_arn = aws_iam_policy.alb-ingress-controller-iam-policy.arn
 }
 
+resource "kubectl_manifest" "crds" {
+  yaml_body = file("${path.module}/yamls/crds.yaml")
+}
+
 # V 2.1
 # https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/
 # helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=<cluster-name>
@@ -45,6 +49,7 @@ data "template_file" "loadbalancer-controller" {
 }
 
 resource "helm_release" "aws-load-balancer-controller" {
+  depends_on = [kubectl_manifest.crds]
   name       = "aws-load-balancer-controller"
   namespace  = "kube-system"
   repository = "https://aws.github.io/eks-charts"
