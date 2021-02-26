@@ -45,7 +45,7 @@ data "template_file" "loadbalancer-controller" {
     cluster_name = var.eks_cluster_name
     vpc_id = var.vpc_id
     region = var.region
-    service_account_name =kubernetes_service_account.alb_ingress_controller.metadata[0].name
+    aws_role_arn = aws_iam_role.alb-ingress-controller-iam-role.arn
   }
 }
 
