@@ -4,25 +4,25 @@ resource "aws_iam_policy" "alb-ingress-controller-iam-policy" {
 }
 
 resource "aws_iam_role" "alb-ingress-controller-iam-role" {
-  name               = "ALBIngressControllerIAMRole"
+  name = "ALBIngressControllerIAMRole"
   assume_role_policy = jsonencode(
-  {
-    Statement = [
-      {
-        Action    = "sts:AssumeRoleWithWebIdentity"
-        Condition = {
-          StringEquals = {
-            "${var.oidc_host_path}:aud" = "sts.amazonaws.com"
+    {
+      Statement = [
+        {
+          Action = "sts:AssumeRoleWithWebIdentity"
+          Condition = {
+            StringEquals = {
+              "${var.oidc_host_path}:aud" = "sts.amazonaws.com"
+            }
           }
-        }
-        Effect    = "Allow",
-        Principal = {
-          Federated = "arn:aws:iam::${var.account_id}:oidc-provider/${var.oidc_host_path}"
-        }
-      },
-    ]
-    Version   = "2012-10-17"
-  }
+          Effect = "Allow",
+          Principal = {
+            Federated = "arn:aws:iam::${var.account_id}:oidc-provider/${var.oidc_host_path}"
+          }
+        },
+      ]
+      Version = "2012-10-17"
+    }
   )
 }
 
@@ -38,17 +38,6 @@ resource "kubectl_manifest" "crds" {
 # V 2.1
 # https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/
 # helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=<cluster-name>
-
-data "template_file" "loadbalancer-controller" {
-  template = file("${path.module}/yamls/loadbalancer-values.yaml")
-  vars = {
-    cluster_name = var.eks_cluster_name
-    vpc_id = var.vpc_id
-    region = var.region
-    service_account_name =kubernetes_service_account.alb_ingress_controller.metadata[0].name
-  }
-}
-
 resource "helm_release" "aws-load-balancer-controller" {
   depends_on = [kubectl_manifest.crds]
   name       = "aws-load-balancer-controller"
@@ -58,6 +47,14 @@ resource "helm_release" "aws-load-balancer-controller" {
   version    = "1.1.4" # appVersion: v2.1.2
 
   values = [
-    data.template_file.loadbalancer-controller.rendered
+    templatefile(
+      "${path.module}/yamls/loadbalancer-values.yaml",
+      {
+        cluster_name         = var.eks_cluster_name
+        vpc_id               = var.vpc_id
+        region               = var.region
+        service_account_name = kubernetes_service_account.alb_ingress_controller.metadata[0].name
+      }
+    )
   ]
 }
