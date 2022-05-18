@@ -22,3 +22,9 @@ variable "account_id" {
   type = string
   description = "The AWS account ID."
 }
+
+variable "force_update" {
+  type = bool
+  default = false
+  description = "Force resource update through delete/recreate if needed."
+}
