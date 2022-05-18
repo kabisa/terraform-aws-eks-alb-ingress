@@ -35,7 +35,7 @@ resource "kubectl_manifest" "crds" {
   yaml_body = file("${path.module}/yamls/crds.yaml")
 }
 
-# V 2.1
+# V 2.4.1
 # https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/
 # helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=<cluster-name>
 resource "helm_release" "aws-load-balancer-controller" {
@@ -44,7 +44,7 @@ resource "helm_release" "aws-load-balancer-controller" {
   namespace  = "kube-system"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
-  version    = "1.1.4" # appVersion: v2.1.2
+  version    = "1.4.1" # appVersion: v2.4.1
 
   values = [
     templatefile(
