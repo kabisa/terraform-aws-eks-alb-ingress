@@ -5,7 +5,7 @@ This module requires our [openid connect module](https://github.com/kabisa/terra
 # Upgrading the module from version 2.1 and lower:
 Due to changes made in the helm chart you will need to recreate the entire stack.
 
-Snippet from the [controller repo](https://github.com/kubernetes-sigs/aws-load-balancer-controller/):
+Snippet from the [controller repo](https://github.com/kubernetes-sigs/aws-load-balancer-controller/tree/main/helm/aws-load-balancer-controller#upgrade):
 ```
 The new controller is backwards compatible with the existing ingress objects. However, it will NOT coexist with the older aws-alb-ingress-controller. 
 
