@@ -26,5 +26,5 @@ variable "account_id" {
 variable "force_update" {
   type = bool
   default = false
-  description = "Force resource update through delete/recreate if needed."
+  description = "Force Helm resource update through delete/recreate if needed."
 }
