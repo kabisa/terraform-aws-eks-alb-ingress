@@ -1,5 +1,8 @@
-# Generated based on https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/v2.1.2/docs/install/iam_policy.json
-# Tool used: https://github.com/flosell/iam-policy-json-to-terraform
+# Generated based on: https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/docs/install/iam_policy.json
+# Commit version:     https://github.com/kubernetes-sigs/aws-load-balancer-controller/commit/cc59a8c6bd521f2e334b81cb0132652fbb3f5d9d
+# Tool used:          https://github.com/flosell/iam-policy-json-to-terraform
+# Matches chart:      version: 1.4.1
+#                     appVersion: v2.4.1
 
 
 data "aws_iam_policy_document" "policy" {
@@ -7,13 +10,27 @@ data "aws_iam_policy_document" "policy" {
     sid       = ""
     effect    = "Allow"
     resources = ["*"]
+    actions   = ["iam:CreateServiceLinkedRole"]
+
+    condition {
+      test     = "StringEquals"
+      variable = "iam:AWSServiceName"
+      values   = ["elasticloadbalancing.amazonaws.com"]
+    }
+  }
+
+  statement {
+    sid       = ""
+    effect    = "Allow"
+    resources = ["*"]
 
     actions = [
-      "iam:CreateServiceLinkedRole",
       "ec2:DescribeAccountAttributes",
       "ec2:DescribeAddresses",
+      "ec2:DescribeAvailabilityZones",
       "ec2:DescribeInternetGateways",
       "ec2:DescribeVpcs",
+      "ec2:DescribeVpcPeeringConnections",
       "ec2:DescribeSubnets",
       "ec2:DescribeSecurityGroups",
       "ec2:DescribeInstances",
@@ -85,15 +102,15 @@ data "aws_iam_policy_document" "policy" {
     actions   = ["ec2:CreateTags"]
 
     condition {
-      test     = "StringEquals"
-      variable = "ec2:CreateAction"
-      values   = ["CreateSecurityGroup"]
-    }
-
-    condition {
       test     = "Null"
       variable = "aws:RequestTag/elbv2.k8s.aws/cluster"
       values   = ["false"]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "ec2:CreateAction"
+      values   = ["CreateSecurityGroup"]
     }
   }
 
@@ -194,6 +211,23 @@ data "aws_iam_policy_document" "policy" {
       variable = "aws:ResourceTag/elbv2.k8s.aws/cluster"
       values   = ["false"]
     }
+  }
+
+  statement {
+    sid    = ""
+    effect = "Allow"
+
+    resources = [
+      "arn:aws:elasticloadbalancing:*:*:listener/net/*/*/*",
+      "arn:aws:elasticloadbalancing:*:*:listener/app/*/*/*",
+      "arn:aws:elasticloadbalancing:*:*:listener-rule/net/*/*/*",
+      "arn:aws:elasticloadbalancing:*:*:listener-rule/app/*/*/*",
+    ]
+
+    actions = [
+      "elasticloadbalancing:AddTags",
+      "elasticloadbalancing:RemoveTags",
+    ]
   }
 
   statement {
