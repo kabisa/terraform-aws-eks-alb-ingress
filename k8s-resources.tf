@@ -55,4 +55,5 @@ resource "kubernetes_service_account" "alb_ingress_controller" {
       "eks.amazonaws.com/role-arn" = "arn:aws:iam::${var.account_id}:role/${aws_iam_role.alb-ingress-controller-iam-role.name}"
     }
   }
+  automount_service_account_token = true
 }
