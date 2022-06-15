@@ -31,8 +31,13 @@ resource "aws_iam_role_policy_attachment" "alb-ingress-controller-iam-role-polic
   policy_arn = aws_iam_policy.alb-ingress-controller-iam-policy.arn
 }
 
+data "kubectl_file_documents" "crds" {
+  content = file("${path.module}/yamls/crds.yaml")
+}
+
 resource "kubectl_manifest" "crds" {
-  yaml_body = file("${path.module}/yamls/crds.yaml")
+  for_each  = data.kubectl_file_documents.crds.manifests
+  yaml_body = each.value
 }
 
 # V 2.4.1
