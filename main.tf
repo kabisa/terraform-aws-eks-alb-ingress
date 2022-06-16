@@ -47,7 +47,7 @@ resource "kubectl_manifest" "targetgroupbindings" {
 # https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/
 # helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=<cluster-name>
 resource "helm_release" "aws-load-balancer-controller" {
-  depends_on   = [kubectl_manifest.crds]
+  depends_on   = [kubectl_manifest.ingessclassparams, kubectl_manifest.targetgroupbindings]
   name         = "aws-load-balancer-controller"
   namespace    = "kube-system"
   repository   = "https://aws.github.io/eks-charts"
