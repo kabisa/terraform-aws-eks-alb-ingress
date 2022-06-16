@@ -31,13 +31,16 @@ resource "aws_iam_role_policy_attachment" "alb-ingress-controller-iam-role-polic
   policy_arn = aws_iam_policy.alb-ingress-controller-iam-policy.arn
 }
 
-data "kubectl_file_documents" "crds" {
-  content = file("${path.module}/yamls/crds.yaml")
+resource "kubectl_manifest" "ingessclassparams" {
+  yaml_body = file("${path.module}/yamls/ingressclassparams.yaml")
+
+  wait = true
 }
 
-resource "kubectl_manifest" "crds" {
-  for_each  = data.kubectl_file_documents.crds.manifests
-  yaml_body = each.value
+resource "kubectl_manifest" "targetgroupbindings" {
+  yaml_body = file("${path.module}/yamls/targetgroupbindings.yaml")
+
+  wait = true
 }
 
 # V 2.4.1
