@@ -2,8 +2,8 @@
 
 This module requires our [openid connect module](https://github.com/kabisa/terraform-aws-eks-openid-connect)
 
-# Upgrading the module from version 2.1 and lower:
-Due to changes made in the helm chart you will need to recreate the entire stack.
+# Upgrading the module from version 2.1 and lower to >= 3.0.3:
+Due to changes made in the helm chart you will need to recreate the entire stack. You should expect a downtime of 5 minutes.
 
 Snippet from the [controller repo](https://github.com/kubernetes-sigs/aws-load-balancer-controller/tree/main/helm/aws-load-balancer-controller#upgrade):
 ```
@@ -11,6 +11,22 @@ The new controller is backwards compatible with the existing ingress objects. Ho
 
 The old controller must be uninstalled completely before installing the new version.
 ```
+
+## Upgrade steps
+
+You should be logged in to the AWS console and watching the target group(s) of your cluster. 
+You should also be prepared to restart the AWS LoadBalancer Controller deployment in your cluster.
+Upgrading this module requires planning and applying changes two times. This is included in the steps below.
+
+1. Comment out the current module and and apply the changes. This will cleanly remove the currently installed module.
+2. Uncomment the module. Set the module version reference to _at least_ 3.0.3; the previous versions of the 3.0.x series are broken.
+3. Run `terraform init` to download the new module.
+4. set the variable `var.force_update` to `true` just to be sure.
+5. Apply the changes and watch the target group(s) until they get into a draining state.
+6. Run `terraform plan` again and apply the lingering changes.
+7. In some undetermined cases the AWS LoadBalancer Controller can get stuck. To be sure, restart the deployment of the AWS LoadBalancer Controller.
+
+The nodes should re-register to the Target Group(s) and your application should become available again.
 
 # Example usage:
 
