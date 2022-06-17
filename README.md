@@ -30,7 +30,7 @@ The nodes should re-register to the Target Group(s) and your application should 
 
 # Example usage:
 
-```hcl-terraform
+```hcl
 module "eks_openid_connect" {
   source = "git@github.com:kabisa/terraform-aws-eks-openid-connect.git?ref=1.0"
   # tf 0.13
