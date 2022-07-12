@@ -124,17 +124,23 @@ data "aws_iam_policy_document" "policy" {
       "ec2:DeleteTags",
     ]
 
-    condition {
-      test     = "Null"
-      variable = "aws:RequestTag/elbv2.k8s.aws/cluster"
-      values   = ["true"]
-    }
-
-    condition {
-      test     = "Null"
-      variable = "aws:ResourceTag/elbv2.k8s.aws/cluster"
-      values   = ["false"]
-    }
+    # See: https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/2692
+    #
+    # If these tags can not be changed, the controller no longer works properly
+    # and the target group registrations might become stale. This means the
+    # traffic can no longer be properly forwarded.
+    #
+    # condition {
+    #   test     = "Null"
+    #   variable = "aws:RequestTag/elbv2.k8s.aws/cluster"
+    #   values   = ["true"]
+    # }
+    #
+    # condition {
+    #   test     = "Null"
+    #   variable = "aws:ResourceTag/elbv2.k8s.aws/cluster"
+    #   values   = ["false"]
+    # }
   }
 
   statement {
@@ -200,17 +206,23 @@ data "aws_iam_policy_document" "policy" {
       "elasticloadbalancing:RemoveTags",
     ]
 
-    condition {
-      test     = "Null"
-      variable = "aws:RequestTag/elbv2.k8s.aws/cluster"
-      values   = ["true"]
-    }
-
-    condition {
-      test     = "Null"
-      variable = "aws:ResourceTag/elbv2.k8s.aws/cluster"
-      values   = ["false"]
-    }
+    # See: https://github.com/kubernetes-sigs/aws-load-balancer-controller/issues/2692
+    #
+    # If these tags can not be changed, the controller no longer works properly
+    # and the target group registrations might become stale. This means the
+    # traffic can no longer be properly forwarded.
+    #
+    # condition {
+    #   test     = "Null"
+    #   variable = "aws:RequestTag/elbv2.k8s.aws/cluster"
+    #   values   = ["true"]
+    # }
+    #
+    # condition {
+    #   test     = "Null"
+    #   variable = "aws:ResourceTag/elbv2.k8s.aws/cluster"
+    #   values   = ["false"]
+    # }
   }
 
   statement {
