@@ -47,12 +47,12 @@ resource "kubectl_manifest" "targetgroupbindings" {
 # https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/
 # helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=<cluster-name>
 resource "helm_release" "aws-load-balancer-controller" {
-  depends_on   = [kubectl_manifest.ingessclassparams, kubectl_manifest.targetgroupbindings]
-  name         = "aws-load-balancer-controller"
-  namespace    = "kube-system"
-  repository   = "https://aws.github.io/eks-charts"
-  chart        = "aws-load-balancer-controller"
-  version      = "1.4.3" 
+  depends_on = [kubectl_manifest.ingessclassparams, kubectl_manifest.targetgroupbindings]
+  name       = "aws-load-balancer-controller"
+  namespace  = "kube-system"
+  repository = "https://aws.github.io/eks-charts"
+  chart      = "aws-load-balancer-controller"
+  version    = "1.4.3"
   # appVersion: v2.4.1
   #This defaults to false, recreation is required when upgrading the module from version 2.1 and lower
   force_update = var.force_update
