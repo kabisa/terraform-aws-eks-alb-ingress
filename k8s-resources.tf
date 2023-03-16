@@ -62,7 +62,7 @@ resource "kubernetes_service_account" "alb_ingress_controller" {
     }
   }
   secret {
-    name = kubernetes_secret.alb_ingress_controller.name
+    name = "alb-ingress-controller"
   }
 
   depends_on = [kubernetes_secret.alb_ingress_controller]
