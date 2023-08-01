@@ -32,7 +32,7 @@ The nodes should re-register to the Target Group(s) and your application should 
 
 ```hcl
 module "eks_openid_connect" {
-  source = "git@github.com:kabisa/terraform-aws-eks-openid-connect.git?ref=1.0"
+  source = "git@github.com:kabisa/terraform-aws-eks-openid-connect.git?ref=1.4.0"
   # tf 0.13
   # depends_on              = [module.eks]
   cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer_url
@@ -40,7 +40,7 @@ module "eks_openid_connect" {
 }
 
 module "alb" {
-  source = "git@github.com:kabisa/terraform-aws-eks-alb-ingress.git?ref=1.0"
+  source = "git@github.com:kabisa/terraform-aws-eks-alb-ingress.git?ref=3.1.0"
   account_id = var.account_id
   eks_cluster_name = var.eks_cluster_name
   oidc_host_path = module.eks_openid_connect.oidc_host_path
