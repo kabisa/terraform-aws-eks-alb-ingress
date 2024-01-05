@@ -238,10 +238,10 @@ data "aws_iam_policy_document" "policy" {
       "elasticloadbalancing:AddTags",
     ]
 
-   condition {
+    condition {
       test     = "StringEquals"
       variable = "elasticloadbalancing:CreateAction"
-      values   = [
+      values = [
         "CreateTargetGroup",
         "CreateLoadBalancer"
       ]
