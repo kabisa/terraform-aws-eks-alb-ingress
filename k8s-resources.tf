@@ -42,6 +42,12 @@ resource "kubernetes_cluster_role" "alb_ingress_controller" {
   }
 }
 
+resource "kubernetes_secret" "alb_ingress_controller" {
+  metadata {
+    name = "alb-ingress-controller"
+  }
+}
+
 resource "kubernetes_service_account" "alb_ingress_controller" {
   metadata {
     name      = "alb-ingress-controller"
@@ -55,5 +61,9 @@ resource "kubernetes_service_account" "alb_ingress_controller" {
       "eks.amazonaws.com/role-arn" = "arn:aws:iam::${var.account_id}:role/${aws_iam_role.alb-ingress-controller-iam-role.name}"
     }
   }
-  automount_service_account_token = true
+  secret {
+    name = "alb-ingress-controller"
+  }
+
+  depends_on = [kubernetes_secret.alb_ingress_controller]
 }
