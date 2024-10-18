@@ -50,7 +50,7 @@ resource "helm_release" "aws-load-balancer-controller" {
   namespace  = "kube-system"
   repository = "https://aws.github.io/eks-charts"
   chart      = "aws-load-balancer-controller"
-  version    = "1.6.2"
+  version    = "1.9.2"
   #This defaults to false, recreation is required when upgrading the module from version 2.1 and lower
   force_update = var.force_update
 
